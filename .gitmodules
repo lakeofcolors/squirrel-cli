@@ -1,0 +1,6 @@
+[submodule "squirrel-core"]
+	path = squirrel-core
+	url = https://github.com/lakeofcolors/squirrel-core
+[submodule "squirrel-front"]
+	path = squirrel-front
+	url = https://github.com/lakeofcolors/squirrel-front

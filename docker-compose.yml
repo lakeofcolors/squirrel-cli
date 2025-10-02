@@ -1,0 +1,94 @@
+services:
+  reverse-proxy:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+    build:
+      context: .
+      dockerfile: etc/nginx/Dockerfile
+      target: dev
+      args:
+        - NGINX_HOST=${NGINX_HOST}
+    environment:
+      - TZ=Europe/Moscow
+      - LETSENCRYPT=true
+      - LE_EMAIL=admin@${NGINX_HOST}
+    restart: always
+    depends_on:
+      squirrel-core:
+        condition: service_started
+      squirrel-front:
+        condition: service_started
+
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - certs:/etc/nginx/ssl
+      - static:/usr/share/nginx/html:ro
+
+  squirrel-front:
+    restart: no
+    build:
+      context: squirrel-front
+      dockerfile: etc/Dockerfile
+      target: build
+    volumes:
+    - static:/app/build_volume
+
+  squirrel-core:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+    restart: always
+    # ports:
+    #   - "9221:9221"
+    depends_on:
+      db:
+        condition: service_healthy
+      bus:
+        condition: service_healthy
+    build:
+      context: squirrel-core
+      dockerfile: etc/Dockerfile
+      target: dev
+    env_file:
+      - .env
+
+  db:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+    image: postgres:15-alpine
+    volumes:
+      - main_db:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB" ]
+      interval: 2s
+      timeout: 1s
+    env_file:
+      - .env
+
+  bus:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+    image: redis:6.2.6-alpine
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
+      interval: 2s
+      timeout: 1s
+    volumes:
+      - bus_db:/data
+
+volumes:
+  bus_db:
+  main_db:
+  certs:
+  static:
