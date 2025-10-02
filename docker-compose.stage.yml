@@ -14,6 +14,7 @@ services:
       - TZ=Europe/Moscow
       - LETSENCRYPT=true
       - LE_EMAIL=admin@${NGINX_HOST}
+      - LE_DOMAINS=api.${NGINX_HOST},belka.${NGINX_HOST}
     restart: always
     depends_on:
       squirrel-core:
