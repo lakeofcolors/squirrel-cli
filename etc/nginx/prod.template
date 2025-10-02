@@ -24,8 +24,9 @@ server {
     ssl_trusted_certificate SSL_CHAIN_CERT;
 
     ssl_protocols TLSv1.2 TLSv1.3;
+
     ssl_ciphers HIGH:!aNULL:!MD5;
-    listen 443;
+    listen 443 ssl http2;
 
     server_name api.${NGINX_HOST};
 
@@ -55,7 +56,7 @@ server {
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
-    listen 443;
+    listen 443 ssl http2;
 
     server_name belka.${NGINX_HOST};
     root /usr/share/nginx/html;
