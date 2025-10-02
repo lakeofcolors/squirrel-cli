@@ -50,10 +50,3 @@ server {
         proxy_ignore_headers "X-Accel-Redirect" "X-Accel-Expires" "Expires" "Vary"; # excludes Cache-Control
     }
 }
-
-server {
-    listen 80 default_server;
-    server_name _;
-
-    return 444;
-}
