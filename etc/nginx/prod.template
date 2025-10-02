@@ -5,7 +5,26 @@ log_format squirrel_format '{"remote_addr":"$remote_addr","time_iso8601":"$time_
                           '"trace_id":"$http_trace_id"}';
 
 server {
+    listen 80;
+    server_name api.lakeofcolors.com belka.lakeofcolors.com;
+
+    location /.well-known/acme-challenge/ {
+        root /usr/share/nginx/html;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
     access_log /dev/stdout squirrel_format;
+    ssl_certificate SSL_CERT;
+    ssl_certificate_key SSL_KEY;
+    ssl_trusted_certificate SSL_CHAIN_CERT;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
     listen 443;
 
     server_name api.${NGINX_HOST};
@@ -30,7 +49,12 @@ server {
 
 server {
     access_log /dev/stdout squirrel_format;
+    ssl_certificate SSL_CERT;
+    ssl_certificate_key SSL_KEY;
+    ssl_trusted_certificate SSL_CHAIN_CERT;
 
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
     listen 443;
 
     server_name belka.${NGINX_HOST};
