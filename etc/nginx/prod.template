@@ -6,7 +6,9 @@ log_format squirrel_format '{"remote_addr":"$remote_addr","time_iso8601":"$time_
 
 server {
     access_log /dev/stdout squirrel_format;
-    listen 80;
+    listen 443 ssl;
+    listen [::]:443;
+
     server_name api.${NGINX_HOST};
 
     location / {
@@ -30,7 +32,8 @@ server {
 server {
     access_log /dev/stdout squirrel_format;
 
-    listen 80;
+    listen 443 ssl;
+    listen [::]:443;
 
     server_name belka.${NGINX_HOST};
     root /usr/share/nginx/html;
