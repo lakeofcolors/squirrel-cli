@@ -46,6 +46,21 @@ server {
 
         proxy_ignore_headers "X-Accel-Redirect" "X-Accel-Expires" "Expires" "Vary"; # excludes Cache-Control
     }
+
+    location /v1/ws {
+        proxy_pass http://squirrel-core:9221;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_read_timeout 7d;
+        proxy_send_timeout 7d;
+    }
 }
 
 server {
